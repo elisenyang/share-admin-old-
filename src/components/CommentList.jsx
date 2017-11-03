@@ -1,23 +1,24 @@
 import React from 'react';
-import Post from './Post'
+import Comment from './Comment';
+import Post from './Post';
 
-class List extends React.Component {
+class CommentList extends React.Component {
     constructor(props) {
         super(props)
-
     }
     render() {
         return (
             <div className='container' style={styles.container} > 
-                {this.props.posts.map((post)=> {
-                    return <Post postInfo={post} view={false} deletePost={this.props.deletePost}/>
+              <Post postInfo={this.props.post} view={true}/>
+                {this.props.comments.map((comment, index)=> {
+                    return <Comment commentInfo={comment} index={index} postId={this.props.postId}/>
                 })}
             </div>
         )
     }
 }
 
-export default List;
+export default CommentList;
 
 const styles = {
     container: {

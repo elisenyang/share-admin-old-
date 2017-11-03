@@ -9,6 +9,7 @@ const connect = process.env.MONGODB_URI;
 mongoose.connect(connect);
 mongoose.Promise = global.Promise;
 
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
 const models = require('./models/models')
