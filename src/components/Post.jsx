@@ -12,6 +12,32 @@ class Post extends React.Component {
         
     }
 
+    onSuspendClick() {
+       if (window.confirm("Are you sure you want to suspend this user?")===true) {
+           fetch('/suspend', {
+               method: 'POST',
+               headers: {
+                "Content-Type": "application/json"
+               },
+               body: JSON.stringify({userId: this.props.postInfo.user.id})
+           })
+       }
+    }
+
+    onWarningClick() {
+        if (window.confirm("Are you sure you want to send this user a warning?")===true) {
+            fetch('/warning', {
+                method: 'POST',
+                headers: {
+                 "Content-Type": "application/json"
+                },
+                body: JSON.stringify({userId: this.props.postInfo.user.id, content: this.props.postInfo.content})
+            }).then(response => {
+                console.log(response)
+            })
+        }
+    }
+
 
     render() {
         let splitUsername = this.props.postInfo.user.animal.split(' ')
@@ -35,9 +61,13 @@ class Post extends React.Component {
                 <div className='delete' style={styles.delete} onClick={()=> this.props.deletePost(this.state.post._id)}>x</div>
             </div>
                 <p className='content' style={styles.content}>{this.props.postInfo.content}</p>
-                <Link to={{pathname: '/post', query: {postId: this.props.postInfo._id}, state: this.state}}><p className='commentsInfo' style={styles.commentsInfo}>
+                <Link to={{pathname: '/post', query: {postId: this.props.postInfo._id, post: this.state.post}, state: this.state}}>
+                    <p className='commentsInfo' style={styles.commentsInfo}>
                     Anonymous {commenters[0]} and {commenters.length < 1 ? 0 : commenters.length-1} others commented
-                </p></Link>
+                    </p>
+                </Link>
+                <a onClick={() => this.onSuspendClick()} style={styles.commentsInfo}>Suspend User</a>
+                <a onClick={() => this.onWarningClick()} style={styles.commentsInfo}>Warning</a>
             </div>
         )
     }

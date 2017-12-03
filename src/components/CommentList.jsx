@@ -6,12 +6,18 @@ class CommentList extends React.Component {
     constructor(props) {
         super(props)
     }
+
+    renderPost() {
+        if (!this.props.flagged) {
+            return (<Post postInfo={this.props.post} view={true}/>)
+        }
+    }
     render() {
         return (
             <div className='container' style={styles.container} > 
-              <Post postInfo={this.props.post} view={true}/>
+              {this.renderPost()}
                 {this.props.comments.map((comment, index)=> {
-                    return <Comment commentInfo={comment} index={index} postId={this.props.postId}/>
+                    return <Comment commentInfo={comment} index={index} postId={this.props.postId} post={this.props.post} flagged={this.props.flagged}/>
                 })}
             </div>
         )

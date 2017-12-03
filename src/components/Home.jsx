@@ -5,6 +5,8 @@ import Menu from 'material-ui/Menu';
 import MenuItem from 'material-ui/MenuItem';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import List from './List'
+import CommentList from './CommentList'
+import Comment from './Comment'
 
 
 class Home extends React.Component {
@@ -17,7 +19,9 @@ class Home extends React.Component {
       flaggedPosts: [],
       flagged: false,
       open: false,
-      anchorEl: null
+      anchorEl: null,
+      flaggedComments: [],
+      comments: false
     }
   }
  componentDidMount() {
@@ -27,6 +31,17 @@ class Home extends React.Component {
     return response.json()
   }).then(  responseJSON => {
     this.setState({allPosts: responseJSON.posts, displayedPosts: responseJSON.posts})
+    var flaggedComments = []
+    this.state.allPosts.forEach(post=> {
+      post.replies.forEach(comment => {
+        if (comment.flagged) {
+          var temp = Object.assign({}, comment)
+          temp.postId = post._id
+          flaggedComments.push(temp)
+        }
+      })
+    })
+    this.setState({flaggedComments: flaggedComments})
   }).catch( err => {
     console.log(err)
   })
@@ -39,11 +54,11 @@ class Home extends React.Component {
       flaggedArr.push(post)
     }
   })
-  this.setState({displayedPosts: flaggedArr, flagged: true, flaggedPosts: flaggedArr})
+  this.setState({displayedPosts: flaggedArr, flagged: true, flaggedPosts: flaggedArr, comments: false})
  }
 
  onAllPostsClick() {
-  this.setState({displayedPosts: this.state.allPosts})
+  this.setState({displayedPosts: this.state.allPosts, comments: false})
  }
 
  handleMenuClick(event) {
@@ -58,6 +73,10 @@ class Home extends React.Component {
    this.setState({
      open: false
    })
+ }
+
+ onFlaggedCommentsClick() {
+   this.setState({comments: true})
  }
 
  onDeleteClick(postId) {
@@ -100,6 +119,15 @@ class Home extends React.Component {
   }
 }
 
+renderList() {
+  if (!this.state.comments) {
+    return (<List posts={this.state.displayedPosts} deletePost={this.onDeleteClick.bind(this)}/>)
+  } else {
+    return this.state.flaggedComments.map(comment => {
+      return (<CommentList comments={this.state.flaggedComments} flagged={true} postId={comment.postId}/>)
+    })
+  }
+}
 
 
  render() {
@@ -119,11 +147,13 @@ class Home extends React.Component {
         <Menu>
             <MenuItem primaryText="All Posts" onClick={() => this.onAllPostsClick()}/>
             <MenuItem primaryText="Flagged Posts" onClick={() => this.onFlaggedPostsClick()}/>
+            <MenuItem primaryText="Flagged Comments" onClick={() => this.onFlaggedCommentsClick()}/>
           </Menu>
         </Popover>
         </MuiThemeProvider>
       <div className='homeContainer' style={styles.homeContainer}>
-      <List posts={this.state.displayedPosts} deletePost={this.onDeleteClick.bind(this)}/>
+      {this.renderList()}
+      
         
       </div>
     </div>

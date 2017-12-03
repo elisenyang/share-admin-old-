@@ -71,4 +71,37 @@ router.post('/deleteComment', function(req, res) {
   })
 })
 
+router.post('/suspend', function(req, res) {
+  User.findById(req.body.userId, function(err, doc) {
+    var suspension = {
+      suspended: true,
+      date: Date.now() + 604800000
+    }
+    doc.suspended = suspension
+    doc.save(function(err) {
+      if (err) {
+        console.log(err)
+      } else {
+        res.json({succes: true})
+      }
+    })
+  })
+})
+
+router.post('/warning', function(req, res) {
+  User.findById(req.body.userId, function(err, doc) {
+    var warnings = {
+      content: req.body.content
+    }
+    doc.warnings = warnings
+    doc.save(function(err) {
+      if (err) {
+        console.loog(err)
+      } else {
+        res.json({succes: true})
+      }
+    })
+  })
+})
+
 module.exports = router;

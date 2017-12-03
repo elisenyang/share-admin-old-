@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 class Comment extends React.Component {
     onDeleteClick() {
@@ -23,6 +24,40 @@ class Comment extends React.Component {
         })
     }
 
+    renderPostLink() {
+        if (this.props.flagged) {
+            return (
+                <Link to={{pathname: '/post', query: {postId: this.props.postId, post: this.props.post}}}><p>View Post</p></Link>
+            )
+        }
+    }
+
+    onSuspendClick() {
+        if (window.confirm("Are you sure you want to suspend this user?")===true) {
+            fetch('/suspend', {
+                method: 'POST',
+                headers: {
+                 "Content-Type": "application/json"
+                },
+                body: JSON.stringify({userId: this.props.commentInfo.user.id})
+            })
+        }
+     }
+
+     onWarningClick() {
+        if (window.confirm("Are you sure you want to send this user a warning?")===true) {
+            fetch('/warning', {
+                method: 'POST',
+                headers: {
+                 "Content-Type": "application/json"
+                },
+                body: JSON.stringify({userId: this.props.commentInfo.user.id, content: this.props.commentInfo.content})
+            }).then(response => {
+                console.log(response)
+            })
+        }
+    }
+
 
     render() {
         let splitUsername = this.props.commentInfo.user.animal.split(' ')
@@ -36,6 +71,9 @@ class Comment extends React.Component {
                 <div className='delete' style={styles.delete} onClick={()=> this.onDeleteClick()}>x</div>
             </div>
                 <p className='content' style={styles.content}>{this.props.commentInfo.content}</p>
+                {this.renderPostLink()}
+                <a onClick={() => this.onSuspendClick()} style={styles.commentsInfo}>Suspend User</a>
+                <a onClick={() => this.onWarningClick()} style={styles.commentsInfo}>Warning</a>
             </div>
         )
     }

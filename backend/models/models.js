@@ -11,7 +11,9 @@ var userSchema = mongoose.Schema({
   },
   userInfo: {
     type: Object
-  }
+  },
+  suspended: Object,
+  warnings: Object
 });
 
 var postSchema = mongoose.Schema({
